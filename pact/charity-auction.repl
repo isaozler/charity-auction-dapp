@@ -62,7 +62,7 @@
 ; Create a new auction
 (env-chain-data
   { "block-height": 300
-  , "block-time": (time "2021-03-01T00:00:00Z") })
+  , "block-time": (time "2023-02-01T00:00:00Z") })
 (begin-tx)
 (n_bd7f56c0bc111ea42026912c37ff5da89149d9dc.charity-auction.start-auction
   "Kadena Hoody"
@@ -72,5 +72,45 @@
   1.0
   (time "2023-03-01T00:00:00Z")
   (time "2023-03-02T00:00:00Z"))
+(commit-tx)
+(env-sigs 
+  [{ 'key : "bob-public-key"
+   , 'caps : [(coin.TRANSFER "bob" (n_bd7f56c0bc111ea42026912c37ff5da89149d9dc.charity-auction.get-auction-escrow "Kadena Hoody") 25.0)]
+  }])
+(env-chain-data
+  { "block-height": 310
+  , "block-time": (time "2023-03-01T10:00:00Z") })
+(begin-tx)
+(n_bd7f56c0bc111ea42026912c37ff5da89149d9dc.charity-auction.bid "Kadena Hoody" "bob" 25.0)
+(expect "Bob funds have updated"
+  975.0
+  (at 'balance (coin.details "bob")))
+(commit-tx)
+(env-sigs 
+  [{ 'key : "alice-public-key"
+   , 'caps : [(coin.TRANSFER "alice" (n_bd7f56c0bc111ea42026912c37ff5da89149d9dc.charity-auction.get-auction-escrow "Kadena Hoody") 25.0)]
+  }])
+(begin-tx)
+(expect-failure 
+  "Alice is too late with her bid"
+  "Bid must be greater than current bid plus minimum bid"
+  (n_bd7f56c0bc111ea42026912c37ff5da89149d9dc.charity-auction.bid "Kadena Hoody" "alice" 25.0))
+(expect "Alice funds not have touched"
+  1000.0
+  (at 'balance (coin.details "alice")))
+(commit-tx)
+  
+(env-sigs 
+  [{ 'key : "alice-public-key"
+   , 'caps : [(coin.TRANSFER "alice" (n_bd7f56c0bc111ea42026912c37ff5da89149d9dc.charity-auction.get-auction-escrow "Kadena Hoody") 30.0)]
+  }])
+(begin-tx)
+(n_bd7f56c0bc111ea42026912c37ff5da89149d9dc.charity-auction.bid "Kadena Hoody" "alice" 30.0)
+(expect "Alice funds not have touched"
+  970.0
+  (at 'balance (coin.details "alice")))
+(expect "Bob should have his bid refunded"
+  1000.0
+  (at 'balance (coin.details "bob")))
 (commit-tx)
 
