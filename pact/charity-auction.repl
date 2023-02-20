@@ -1,0 +1,61 @@
+(load "util/guards.repl")
+
+(env-data
+  { "upgrade": false,
+    "charity-auction-keyset": {
+      "pred": "keys-any",
+      "keys": [
+        "457117167173a2afafdd72fd05106eaee745a37d808476455d3b1a8acc9ad8d5",
+        "e82af4daa502ca3b039e48b892c7c21acb2dfa11ffc6c6581d4fbc044d244ea8",
+        "554754f48b16df24b552f6832dda090642ed9658559fef9f3ee1bb4637ea7c94",
+        "df8433222f53f8fddc1629f627e7eb4dd832e52e809e424f7417f192857e2509",
+        "498a713d550b09cd88f5065ad4a9bc1addbb01e093271c59b1f7f586cc50f251",
+        "5ad08b69e84ed6fb2a1b3e8a30cffcf5c022e19c647915bf45ae231d7e0cdb0d",
+        "f05401cedfb71fbd4e2b3d7b611d581cd0d95436717016f198e241fdedfd2f43"
+      ]
+    }
+  })
+
+(define-namespace
+  (ns.create-principal-namespace (read-keyset 'charity-auction-keyset))
+  (read-keyset 'charity-auction-keyset )
+  (read-keyset 'charity-auction-keyset ))
+
+; Load the pact contracts from root in oder to be able to make transactions
+(begin-tx)
+(env-data
+  { "upgrade": false,
+    "charity-auction-keyset": {
+      "pred": "keys-any",
+      "keys": [
+        "457117167173a2afafdd72fd05106eaee745a37d808476455d3b1a8acc9ad8d5",
+        "e82af4daa502ca3b039e48b892c7c21acb2dfa11ffc6c6581d4fbc044d244ea8",
+        "554754f48b16df24b552f6832dda090642ed9658559fef9f3ee1bb4637ea7c94",
+        "df8433222f53f8fddc1629f627e7eb4dd832e52e809e424f7417f192857e2509",
+        "498a713d550b09cd88f5065ad4a9bc1addbb01e093271c59b1f7f586cc50f251",
+        "5ad08b69e84ed6fb2a1b3e8a30cffcf5c022e19c647915bf45ae231d7e0cdb0d",
+        "f05401cedfb71fbd4e2b3d7b611d581cd0d95436717016f198e241fdedfd2f43"
+      ]
+    }
+  })
+
+(env-sigs [{
+    "key": "df8433222f53f8fddc1629f627e7eb4dd832e52e809e424f7417f192857e2509"
+   ,"caps": []
+  }])
+(load "charity-auction.pact")
+(commit-tx)
+(verify "n_bd7f56c0bc111ea42026912c37ff5da89149d9dc.charity-auction")
+
+(env-data {
+ "bob-keyset": { "keys": [ "bob-public-key" ], "pred": "keys-all" },
+ "alice-keyset": { "keys": [ "alice-public-key" ], "pred": "keys-all" },
+ "greg-keyset": { "keys": [ "greg-public-key" ], "pred": "keys-all" }
+})
+(begin-tx)
+(test-capability (coin.COINBASE))
+(coin.coinbase "bob" (read-keyset "bob-keyset") 1000.0)
+(coin.coinbase "alice" (read-keyset "alice-keyset") 1000.0)
+(coin.coinbase "greg" (read-keyset "greg-keyset") 1000.0)
+(commit-tx)
+
