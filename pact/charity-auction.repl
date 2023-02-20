@@ -59,3 +59,18 @@
 (coin.coinbase "greg" (read-keyset "greg-keyset") 1000.0)
 (commit-tx)
 
+; Create a new auction
+(env-chain-data
+  { "block-height": 300
+  , "block-time": (time "2021-03-01T00:00:00Z") })
+(begin-tx)
+(n_bd7f56c0bc111ea42026912c37ff5da89149d9dc.charity-auction.start-auction
+  "Kadena Hoody"
+  "Kadena Hoody limited edition for earthquake in Turkey"
+  "https://kadena.io/limited-edition-hoody"
+  25.0
+  1.0
+  (time "2023-03-01T00:00:00Z")
+  (time "2023-03-02T00:00:00Z"))
+(commit-tx)
+
