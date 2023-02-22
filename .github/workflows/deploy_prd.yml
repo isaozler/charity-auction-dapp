@@ -1,0 +1,40 @@
+name: Deploy prd
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+      - run: yarn
+      - run: yarn run lint
+      - run: yarn run build
+        env:
+          NEXT_PUBLIC_NAMESPACE_ID: 'kadena'
+          NEXT_PUBLIC_NETWORK_ID: 'mainnet01'
+          NEXT_PUBLIC_ACTIVE_NETWORK_IDS: 'mainnet01'
+          NEXT_PUBLIC_PROJECT_ID: '29cfa645fafd942bdf58772b695d4746'
+          NEXT_PUBLIC_RELAY_URL: 'wss://relay.walletconnect.com'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+      - name: 'Auth docker for GCP'
+        run: gcloud auth configure-docker -q
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: eu.gcr.io/auction-dapp-kda/auction-kda
+      - run: gcloud run deploy auction-kda --image=eu.gcr.io/auction-dapp-kda/auction-kda --platform managed --region=europe-west4 --allow-unauthenticated
