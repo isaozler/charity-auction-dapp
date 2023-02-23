@@ -8,6 +8,7 @@ import { useJsonRpc } from "@/context/JsonRpcContext";
 import { DEFAULT_RECEIVER_CHAINID, DEFAULT_TEST_CHAINS, DEFAULT_MAIN_CHAINS } from '@/context/constants';
 import { apiHost } from '@/context/helpers/kadena';
 import { TTransferParams } from './useForm';
+import { ModalCtrlState } from '@web3modal/core/dist/_types/src/types/controllerTypes';
 
 export enum DEFAULT_KADENA_METHODS {
   KADENA_SIGN_TRANSACTION = "kadena_signTransaction",
@@ -23,8 +24,16 @@ const web3Modal = new Web3Modal({
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID || "",
   walletConnectVersion: 2,
   defaultChain: 1,
-  themeMode: 'dark'
+  themeMode: 'dark',
+  themeBackground: 'themeColor',
+  themeColor: 'blackWhite',
+  standaloneChains: [],
+  mobileWallets: [],
 });
+
+web3Modal.subscribeModal(({ open }: ModalCtrlState) => {
+  console.log('TEST', open)
+})
 
 export const useWalletConnectV2 = () => {
   const [modal, setModal] = useState("");
@@ -32,7 +41,7 @@ export const useWalletConnectV2 = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isAutoLoad, setIsAutoLoad] = useState<boolean>(false);
 
-  const openRequestModal = () => setModal("request");
+  // const openRequestModal = () => setModal("request");
 
   const {
     client,
@@ -64,29 +73,6 @@ export const useWalletConnectV2 = () => {
     setIsConnected(false)
     setIsWalletConnectPaired(false)
   }, [])
-
-  const getKadenaActions = (): AccountAction[] => {
-    const testSignTransaction = async (chainId: string, address: string) => {
-      openRequestModal();
-      await kadenaRpc.testSignTransaction(chainId, address);
-    };
-
-    const testSignMessage = async (chainId: string, address: string) => {
-      openRequestModal();
-      await kadenaRpc.testSignMessage(chainId, address);
-    };
-
-    return [
-      {
-        method: DEFAULT_KADENA_METHODS.KADENA_SIGN_TRANSACTION,
-        callback: testSignTransaction,
-      },
-      {
-        method: DEFAULT_KADENA_METHODS.KADENA_SIGN_MESSAGE,
-        callback: testSignMessage,
-      },
-    ];
-  };
 
   const disconnectHandler = useCallback(async () => {
     if (!client) {

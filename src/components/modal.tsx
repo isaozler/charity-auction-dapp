@@ -99,29 +99,50 @@ const ModalOverlay = styled("div", {
   justifyContent: "center",
 });
 const ModalWrapper = styled("div", {
-  background: "$white",
   width: "100%",
   margin: "0 $10",
-  height: 200,
+  minHeight: 200,
   color: "$black",
+  position: "relative",
+  "&::before": {
+    content: "",
+    position: "absolute",
+    top: -10,
+    left: -10,
+    bottom: -10,
+    right: -10,
+    border: "2px $white solid",
+    zIndex: -1,
+  },
   "@s": {
     width: "100%",
     margin: "0 calc(2* $10)",
   },
   "@minM": {
     width: 400,
-    height: 200,
+    minHeight: 200,
   },
   zIndex: 11,
 });
 const ModalHeader = styled("div", {
-  background: "rgba(0,0,0,0.2)",
+  // background: "$white",
+  color: "$white",
   display: "flex",
   flexDirection: "row",
   padding: "$4",
   position: "relative",
   height: 40,
   alignItems: "center",
+  marginBottom: 2,
+  "&::before": {
+    content: "",
+    position: "absolute",
+    top: -10,
+    left: -10,
+    bottom: -10,
+    right: -10,
+    border: "2px $white solid",
+  },
 });
 const ModalCloseHandler = styled("button", {
   position: "absolute",
@@ -131,15 +152,21 @@ const ModalCloseHandler = styled("button", {
   height: 40,
   background: "transparent",
   fontWeight: "bold",
-  border: 0,
+  border: "2px $white solid",
   fontSize: "$m",
   cursor: "pointer",
+  color: "$white",
 });
 const ModalTitle = styled("div", {
   fontWeight: "bold",
 });
 const ModalBody = styled("div", {
   padding: "$4",
+  marginTop: "$4",
+  display: "flex",
+  flexDirection: "column",
+  minHeight: 144,
+  justifyContent: "center",
 });
 
 export default Modal;

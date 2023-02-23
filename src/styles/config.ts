@@ -77,6 +77,7 @@ export const {
     l: '(min-width: 1024px) and (max-width: 1439px)',
     xl: '(min-width: 1440px) and (max-width: 1919px)',
     '2xl': '(min-width: 1920px)',
+    minHLarge: '(min-height: 700px)',
   },
   utils: {},
 });

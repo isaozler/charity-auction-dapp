@@ -5,6 +5,7 @@ import {
   Input,
   Submit,
   Button,
+  submitButtonStyle,
 } from "@/components/form/components";
 import { useEffect, useState } from "react";
 import { ToWallet } from "./toWallet";
@@ -45,6 +46,7 @@ export const Form = () => {
       <FormDOM onSubmit={(e) => e.preventDefault()}>
         <AddressWrapper>
           <Address
+            type="sender"
             label={
               isConnected && activeClient
                 ? `${activeClient} (${currentBalance?.balance || 0} KDA)`
@@ -56,16 +58,18 @@ export const Form = () => {
                 : "Sign in to your wallet to activate"
             }
           />
-          {!isConnected && (
-            <Button outlined onClick={connectHandler}>
-              Connect
-            </Button>
-          )}
-          {isConnected && (
-            <Button outlined onClick={disconnectHandler}>
-              Disconnect
-            </Button>
-          )}
+          <ButtonsWrapper>
+            {!isConnected && (
+              <Button outlined onClick={connectHandler}>
+                Connect
+              </Button>
+            )}
+            {isConnected && (
+              <Button outlined onClick={disconnectHandler}>
+                Disconnect
+              </Button>
+            )}
+          </ButtonsWrapper>
         </AddressWrapper>
         <Select
           hasSpaceAround={true}
@@ -108,6 +112,7 @@ export const Form = () => {
             }}
           />
           <Select
+            name="chain"
             disabled={!amount || !balances.length || !selectedOrganization}
             onChange={(e) => {
               const selected = Array.from({ length: 20 })
@@ -137,6 +142,7 @@ export const Form = () => {
               ))}
           </Select>
           <Submit
+            name="submit"
             label="Donate"
             disabled={
               !isConnected ||
@@ -164,10 +170,10 @@ export const Form = () => {
       <Modal
         onClose={() => setShowModal(false)}
         show={showModal}
-        title="Select Connector"
+        title="Choose your Wallet"
       >
         {(availableClients.length && (
-          <>
+          <ConnectionButtons>
             {availableClients.map((client) => (
               <ConnectorButton
                 key={client.trim().toLowerCase()}
@@ -176,7 +182,7 @@ export const Form = () => {
                 {client}
               </ConnectorButton>
             ))}
-          </>
+          </ConnectionButtons>
         )) ||
           "Connectors not available at the moment"}
       </Modal>
@@ -189,19 +195,58 @@ const Wrapper = styled("div", {
 });
 
 const AddressWrapper = styled("div", {
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "space-between",
+  display: "grid",
+  gridTemplateAreas: `
+      "address"
+      "button"
+    `,
+  gridGap: "$4",
+  "@minM": {
+    gridTemplateAreas: `
+      "address button"
+    `,
+  },
 });
 
 const FormDOM = styled("form", {
   margin: 0,
 });
 
-const ConnectorButton = styled("button", {});
+const ConnectionButtons = styled("div", {
+  flexDirection: "column",
+  gap: "$4",
+  margin: "$2 0",
+  alignItems: "center",
+  justifyContent: "center",
+});
+
+const ButtonsWrapper = styled("div", {
+  display: "inline-grid",
+  gridArea: "button",
+});
+
+const ConnectorButton = styled("button", submitButtonStyle);
 
 const Footer = styled("div", {
-  display: "flex",
-  justifyContent: "space-between",
+  display: "grid",
   marginTop: "$8",
+  gridTemplateAreas: `
+    "amount amount chain"
+    ". . submit"
+  `,
+  gridGap: "$4",
+  "@minM": {
+    gridTemplateAreas: `
+      "amount chain submit"
+    `,
+    gridColumnGap: "$4",
+  },
+  "@xs": {
+    gridTemplateAreas: `
+      "amount"
+      "chain"
+      "submit"
+    `,
+    gridColumnGap: "$4",
+  },
 });

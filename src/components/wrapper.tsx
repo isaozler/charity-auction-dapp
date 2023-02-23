@@ -7,4 +7,10 @@ export const Wrapper = styled("div", {
   "@minM": {
     maxWidth: 600,
   },
+  "@minHLarge": {
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+  },
 });

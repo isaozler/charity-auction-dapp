@@ -5,18 +5,20 @@ import { ChevronDown } from "@/components/icons";
 interface ISelectProps extends React.HTMLAttributes<HTMLSelectElement> {
   hasSpaceAround?: boolean;
   disabled?: boolean;
+  name?: "chain";
 }
 
 export const Select: FC<ISelectProps> = ({
   children,
   onChange,
   hasSpaceAround,
+  name,
   ...props
 }) => {
   const [isFocussed, setIsFocussed] = useState(false);
 
   return (
-    <Wrapper>
+    <Wrapper name={name}>
       <SelectComponent
         hasSpaceAround={hasSpaceAround}
         disabled={props.disabled}
@@ -39,7 +41,14 @@ export const Select: FC<ISelectProps> = ({
 
 const Wrapper = styled("div", {
   position: "relative",
-  // margin: "$8 0 $4",
+  variants: {
+    name: {
+      chain: {
+        display: "inline-grid",
+        gridArea: "chain",
+      },
+    },
+  },
 });
 
 const IconWrapper = styled("div", {

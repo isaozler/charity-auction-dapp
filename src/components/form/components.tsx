@@ -2,12 +2,13 @@ import { styled } from "@/styles/config";
 import { ChangeEventHandler, MouseEvent, FC, MouseEventHandler } from "react";
 export { Select } from "./select";
 
-export const Address: FC<{ label: string; address: string }> = ({
-  label,
-  address,
-}) => {
+export const Address: FC<{
+  label: string;
+  address: string;
+  type?: "sender";
+}> = ({ label, address, type }) => {
   return (
-    <Component>
+    <Component type={type}>
       <span>{label}</span>
       <div>{address}</div>
     </Component>
@@ -28,6 +29,13 @@ const Component = styled("div", {
     whiteSpace: "nowrap",
     overflow: "hidden",
     paddingRight: "$4",
+  },
+  variants: {
+    type: {
+      sender: {
+        gridArea: "address",
+      },
+    },
   },
 });
 
@@ -56,8 +64,11 @@ export const Input: FC<{
 };
 
 const InputWrapper = styled("div", {
-  display: "flex",
-  flexDirection: "column",
+  display: "grid",
+  // flexDirection: "column",
+  gridArea: "amount",
+  gridColumnStart: 1,
+  gridColumnEnd: 2,
 });
 const InputContainer = styled("div", {
   position: "relative",
@@ -107,23 +118,36 @@ const PriceIndicator = styled("div", {
 });
 
 export const Submit: FC<{
+  name?: "submit";
   disabled: boolean;
   label: string;
   onClick: MouseEventHandler<HTMLButtonElement>;
-}> = ({ label, disabled, onClick }) => {
+}> = ({ name, label, disabled, onClick }) => {
   return (
-    <div>
+    <Wrapper name={name}>
       <Button disabled={disabled} onClick={onClick}>
         {label}
       </Button>
-    </div>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled("div", {
+  display: "inline-grid",
+  gridArea: "attr(data-name)",
+  variants: {
+    name: {
+      submit: {
+        gridArea: "submit",
+      },
+    },
+  },
+});
 
 export const submitButtonStyle = {
   background: "$white",
   height: 40,
-  borderWidth: 3,
+  borderWidth: 2,
   borderStyle: "solid",
   borderColor: "$white",
   padding: "0 $4",
